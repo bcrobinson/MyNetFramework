@@ -1,7 +1,7 @@
-﻿namespace DesignSurface.App.Framework.Test
+﻿namespace Library.Wpf.Test
 {
     using System.Collections.ObjectModel;
-    using DesignSurface.App.Framework.Wpf;
+    using Library.Wpf;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

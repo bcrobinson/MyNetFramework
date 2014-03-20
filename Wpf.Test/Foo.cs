@@ -1,4 +1,4 @@
-﻿namespace ManagerApp.TestUtilities.Sample
+﻿namespace Library.Wpf.Test
 {
     /// <summary>
     /// Basic object for testing with.

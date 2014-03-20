@@ -1,4 +1,4 @@
-﻿namespace DesignSurface.App.Framework
+﻿namespace Library.Wpf
 {
     using System;
 

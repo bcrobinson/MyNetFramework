@@ -7,10 +7,11 @@
     <ProjectGuid>{2BF91FA7-E960-4900-914C-98ED0C2A0DF4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Wpf</RootNamespace>
-    <AssemblyName>Wpf</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>Library.Wpf</RootNamespace>
+    <AssemblyName>Library.Wpf</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,7 +47,7 @@
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="ExpressionExtensions.cs" />
     <Compile Include="IAppContext.cs" />
-    <Compile Include="ICloneable.cs" />
+    <Compile Include="ICloneable{T}.cs" />
     <Compile Include="IRevertibleChangeTrackingAsync.cs" />
     <Compile Include="NotifyPropertyChanged.cs" />
     <Compile Include="ObservableBatchCollection.cs" />

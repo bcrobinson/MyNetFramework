@@ -1,4 +1,4 @@
-﻿namespace DesignSurface.App.Framework.Wpf
+﻿namespace Library.Wpf
 {
     using System;
     using System.Collections.Concurrent;

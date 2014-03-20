@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf", "Wpf\Wpf.csproj", "{2BF91FA7-E960-4900-914C-98ED0C2A0DF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Wpf", "Wpf\Library.Wpf.csproj", "{2BF91FA7-E960-4900-914C-98ED0C2A0DF4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf.Test", "Wpf.Test\Wpf.Test.csproj", "{AC1C893F-E210-440F-8BDF-FAD6B6E0ED20}"
 EndProject

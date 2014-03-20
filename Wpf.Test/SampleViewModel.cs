@@ -1,10 +1,9 @@
-﻿namespace Wpf.Test
+﻿namespace Library.Wpf.Test
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Linq.Expressions;
-    using DesignSurface.App.Framework.Wpf;
-    using ManagerApp.TestUtilities.Sample;
+    using Library.Wpf;
 
     internal class SampleViewModel : ViewModelBase
     {

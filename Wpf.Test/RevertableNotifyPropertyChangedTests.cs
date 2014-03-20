@@ -1,11 +1,10 @@
-﻿namespace DesignSurface.App.Framework.Test
+﻿namespace Library.Wpf.Test
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
-    using System.Runtime.CompilerServices;
-    using DesignSurface.App.Framework.Wpf;
+    using Library.Wpf;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

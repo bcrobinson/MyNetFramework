@@ -1,10 +1,7 @@
-﻿namespace DesignSurface.App.Framework.Wpf
+﻿namespace Library.Wpf
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using System.Windows.Input;
 
@@ -37,6 +34,12 @@
         {
             add { CommandManager.RequerySuggested += value; }
             remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        event EventHandler ICommand.CanExecuteChanged
+        {
+            add { this.CanExecuteChanged += value; }
+            remove { this.CanExecuteChanged -= value; }
         }
 
         [DebuggerStepThrough]
@@ -83,12 +86,6 @@
         bool ICommand.CanExecute(object parameter)
         {
             return this.CanExecute(parameter);
-        }
-
-        event EventHandler ICommand.CanExecuteChanged
-        {
-            add { this.CanExecuteChanged += value; }
-            remove { this.CanExecuteChanged -= value; }
         }
 
         [DebuggerStepThrough]

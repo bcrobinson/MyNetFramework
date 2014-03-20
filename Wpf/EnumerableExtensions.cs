@@ -1,12 +1,76 @@
-﻿using System.Collections;
-using System.Linq;
-
-namespace DesignSurface.App.Framework
+﻿namespace Library.Wpf
 {
+    using System.Collections;
     using System.Collections.Generic;
 
     public static class EnumerableExtensions
     {
+        public static IEnumerable<TItem> Append<TItem>(this IEnumerable<TItem> source, TItem item)
+        {
+            foreach (TItem i in source)
+            {
+                yield return i;
+            }
+
+            yield return item;
+        }
+
+        public static IEnumerable<TItem> Append<TItem>(this TItem source, IEnumerable<TItem> items)
+        {
+            yield return source;
+
+            foreach (TItem item in items)
+            {
+                yield return item;
+            }
+        }
+
+        public static IEnumerable<TItem> Append<TItem>(this TItem source, TItem item)
+        {
+            yield return source;
+
+            yield return item;
+        }
+
+        public static IEnumerable<TItem> AsType<TItem>(this IEnumerable source)
+                    where TItem : class
+        {
+            if (source == null)
+            {
+                yield break;
+            }
+
+            foreach (object item in source)
+            {
+                TItem t = item as TItem;
+
+                if (t != null)
+                {
+                    yield return t;
+                }
+            }
+        }
+
+        public static bool HasAtLeast<TItem>(this IEnumerable<TItem> source, int count)
+        {
+            if (source == null)
+            {
+                return false;
+            }
+
+            int i = 0;
+
+            foreach (TItem item in source)
+            {
+                if (i++ >= count)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Creates am infinite series that starts with the source items then returns the default item value indefinitely.
         /// </summary>
@@ -39,72 +103,6 @@ namespace DesignSurface.App.Framework
             while (true)
             {
                 yield return padItem;
-            }
-        }
-
-        public static IEnumerable<TItem> Append<TItem>(this IEnumerable<TItem> source, TItem item)
-        {
-            foreach (TItem i in source)
-            {
-                yield return i;
-            }
-
-            yield return item;
-        }
-
-        public static IEnumerable<TItem> Append<TItem>(this TItem source, IEnumerable<TItem> items)
-        {
-            yield return source;
-
-            foreach (TItem item in items)
-            {
-                yield return item;
-            }
-        }
-
-        public static IEnumerable<TItem> Append<TItem>(this TItem source, TItem item)
-        {
-            yield return source;
-
-            yield return item;
-        }
-
-        public static bool HasAtLeast<TItem>(this IEnumerable<TItem> source, int count)
-        {
-            if (source == null)
-            {
-                return false;
-            }
-
-            int i = 0;
-
-            foreach (TItem item in source)
-            {
-                if (i++ >= count)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static IEnumerable<TItem> AsType<TItem>(this IEnumerable source)
-            where TItem : class 
-        {
-            if (source == null)
-            {
-                yield break;
-            }
-
-            foreach (object item in source)
-            {
-                TItem t = item as TItem;
-
-                if (t != null)
-                {
-                    yield return t;
-                }
             }
         }
     }

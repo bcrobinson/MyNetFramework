@@ -1,11 +1,9 @@
-﻿namespace DesignSurface.App.Framework.Wpf
+﻿namespace Library.Wpf
 {
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Globalization;
-    using System.Linq;
     using System.Linq.Expressions;
     using System.Text;
 
@@ -23,7 +21,7 @@
         /// The error cache.
         /// </summary>
         private readonly ConcurrentDictionary<string, List<string>> errorCache;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelBase"/> class.
         /// </summary>
@@ -35,23 +33,12 @@
         }
 
         /// <summary>
-        /// Gets the <see cref="System.String"/> with the specified column name.
+        /// Gets the app context.
         /// </summary>
-        /// <value>The <see cref="System.String"/>.</value>
-        /// <param name="columnName">Name of the column.</param>
-        /// <returns>A string error for the specified column. Empty string if none found.</returns>
-        public string this[string columnName]
+        /// <value>The app context.</value>
+        public IAppContext AppContext
         {
-            get
-            {
-                List<string> errors;
-                if (!this.ErrorCache.TryGetValue(columnName, out errors))
-                {
-                    errors = new List<string>();
-                }
-
-                return string.Join(",", errors);
-            }
+            get { return this.appContext; }
         }
 
         /// <summary>
@@ -77,21 +64,32 @@
         }
 
         /// <summary>
-        /// Gets the app context.
-        /// </summary>
-        /// <value>The app context.</value>
-        public IAppContext AppContext
-        {
-            get { return this.appContext; }
-        }
-
-        /// <summary>
         /// Gets the error cache.
         /// </summary>
         /// <value>The error cache.</value>
         protected ConcurrentDictionary<string, List<string>> ErrorCache
         {
             get { return this.errorCache; }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="System.String"/> with the specified column name.
+        /// </summary>
+        /// <value>The <see cref="System.String"/>.</value>
+        /// <param name="columnName">Name of the column.</param>
+        /// <returns>A string error for the specified column. Empty string if none found.</returns>
+        public string this[string columnName]
+        {
+            get
+            {
+                List<string> errors;
+                if (!this.ErrorCache.TryGetValue(columnName, out errors))
+                {
+                    errors = new List<string>();
+                }
+
+                return string.Join(",", errors);
+            }
         }
 
         /// <summary>
