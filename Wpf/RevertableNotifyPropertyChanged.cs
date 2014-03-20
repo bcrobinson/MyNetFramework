@@ -14,7 +14,7 @@
     using System.Threading.Tasks;
     using System.Xml.Serialization;
 
-    public abstract class RevertableNotifyPropertyChanged<TObject> : NotifyPropertyChanged, IRevertibleChangeTrackingAsync
+    public abstract class RevertableNotifyPropertyChanged<TObject> : NotifyPropertyChanged, IRevertibleChangeTracking
         where TObject : RevertableNotifyPropertyChanged<TObject>
     {
         private static Lazy<ReadOnlyDictionary<string, PropertyInfo>> lazyProperties = new Lazy<ReadOnlyDictionary<string, PropertyInfo>>(
@@ -114,7 +114,7 @@
             }
         }
 
-        public Task AcceptChanges()
+        public void AcceptChanges()
         {
             foreach (var acceptFunc in lazyChangeTrackedProperties.Value.Select(p => p.Item2))
             {
@@ -171,8 +171,6 @@
             }
 
             this.IsChanged = false;
-
-            return Task.FromResult(true);
         }
 
         public override void OnPropertyChanged([CallerMemberName]string propertyName = "")
@@ -189,18 +187,15 @@
         /// <summary>
         /// Resets the object’s state to unchanged by rejecting the modifications.
         /// </summary>
-        /// <returns>A Task representing the completion of the Rejection.</returns>
         /// <exception cref="System.InvalidOperationException">If there is an error reverting back
         /// this objects original values.</exception>
-        public Task RejectChanges()
+        public void RejectChanges()
         {
             ResetProperties(this.orignalClonedObjects);
             ResetProperties(this.orignalValueObjects);
             ResetCollections(this.orignalCollections);
 
             this.IsChanged = false;
-
-            return Task.FromResult(true);
         }
 
         protected void RegisterRevertTrackingObservableCollection<TProperty>(Expression<Func<TObject, ObservableBatchCollection<TProperty>>> collectionProperty)

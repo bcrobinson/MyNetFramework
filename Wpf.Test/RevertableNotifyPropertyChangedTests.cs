@@ -57,7 +57,7 @@
             int originalInt = foo.SomeValue;
 
             foo.SomeValue = 99;
-            foo.RejectChanges().Wait();
+            foo.RejectChanges();
 
             Assert.AreEqual(originalInt, foo.SomeValue);
         }
