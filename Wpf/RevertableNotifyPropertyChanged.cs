@@ -263,53 +263,19 @@
 
         private void ResetCollections(ConcurrentDictionary<string, CollectionRef> collectionDictionary)
         {
-            foreach (var trackedCollection in collectionDictionary.Keys.ToList())
+            foreach (var trackedCollection in collectionDictionary.ToList())
             {
-                CollectionRef originalValueRef = null;
-                int retryCount = 0;
+                object collection = lazyProperties.Value[trackedCollection.Key].GetValue(this);
 
-                while (retryCount < 10 && !collectionDictionary.TryGetValue(trackedCollection, out originalValueRef))
-                {
-                    retryCount++;
-                }
-
-                if (retryCount >= 10)
-                {
-                    throw new InvalidOperationException(
-                        string.Format(
-                        "Error accessing original object store for collection \"{0}\" on object \"{1}\"",
-                        trackedCollection,
-                        typeof(TObject).FullName));
-                }
-
-                object collection = lazyProperties.Value[trackedCollection].GetValue(this);
-
-                originalValueRef.ResetDelegate.DynamicInvoke(collection, originalValueRef.OriginalValues);
+                trackedCollection.Value.ResetDelegate.DynamicInvoke(collection, trackedCollection.Value.OriginalValues);
             }
         }
 
         private void ResetProperties(ConcurrentDictionary<string, object> valueDictionary)
         {
-            foreach (var trackedProperty in valueDictionary.Keys.ToList())
+            foreach (var trackedProperty in valueDictionary.ToList())
             {
-                object originalValue = null;
-                int retryCount = 0;
-
-                while (retryCount < 10 && !valueDictionary.TryGetValue(trackedProperty, out originalValue))
-                {
-                    retryCount++;
-                }
-
-                if (retryCount >= 10)
-                {
-                    throw new InvalidOperationException(
-                        string.Format(
-                        "Error accessing original object store for property \"{0}\" on object \"{1}\"",
-                        trackedProperty,
-                        typeof(TObject).FullName));
-                }
-
-                lazyProperties.Value[trackedProperty].SetValue(this, originalValue);
+                lazyProperties.Value[trackedProperty.Key].SetValue(this, trackedProperty.Value);
             }
         }
 
