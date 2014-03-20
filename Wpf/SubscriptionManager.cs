@@ -7,33 +7,34 @@
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Windows.Threading;
 
     public sealed class SubscriptionManager
     {
-        private readonly ConcurrentDictionary<Type, List<IWrapper>> asyncMessageSubscriptions;
+        private readonly ConcurrentDictionary<Type, List<SyncroWrapper>> asyncMessageSubscriptions;
 
         public SubscriptionManager()
         {
-            this.asyncMessageSubscriptions = new ConcurrentDictionary<Type, List<IWrapper>>();
+            this.asyncMessageSubscriptions = new ConcurrentDictionary<Type, List<SyncroWrapper>>();
         }
 
-        public void RegisterAsync<TMessage>(Func<TMessage, Task> subscriberActionAsync)
+        public void Register<TMessage>(Action<TMessage> subscriberActionAsync)
         {
-            AsyncWrapper wrapper = new AsyncWrapper(subscriberActionAsync);
+            SyncroWrapper wrapper = new SyncroWrapper(subscriberActionAsync);
 
             this.RegisterWrapper<TMessage>(wrapper);
         }
 
-        public void UnRegisterAsync<TMessage>(Func<TMessage, Task> subscriberAction)
+        public void UnRegister<TMessage>(Action<TMessage> subscriberAction)
         {
-            AsyncWrapper wrapper = new AsyncWrapper(subscriberAction);
+            SyncroWrapper wrapper = new SyncroWrapper(subscriberAction);
 
             this.UnRegisterWrapper<TMessage>(wrapper);
         }
 
-        public async Task PublishAsync<TMessage>(TMessage eventMessage)
+        public void Publish<TMessage>(TMessage eventMessage)
         {            
-            List<IWrapper> asyncSubscribers;
+            List<SyncroWrapper> asyncSubscribers;
             
             if (this.asyncMessageSubscriptions.TryGetValue(typeof(TMessage), out asyncSubscribers))
             {
@@ -47,7 +48,7 @@
                         continue;
                     }
 
-                    await sub.InvokeAction<TMessage>(eventMessage);
+                    sub.InvokeAction<TMessage>(eventMessage);
                 }
 
                 if (cleanupSubs)
@@ -57,14 +58,14 @@
             }
         }
 
-        private void UnRegisterWrapper<TMessage>(IWrapper wrapper)
+        private void UnRegisterWrapper<TMessage>(SyncroWrapper wrapper)
         {
             this.asyncMessageSubscriptions.
                 AddOrUpdate(
                 //// Key
                 typeof(TMessage),
                 //// Add
-                new List<IWrapper>(),
+                new List<SyncroWrapper>(),
                 //// Update
                 (key, value) =>
                 {
@@ -73,14 +74,14 @@
                 });
         }
 
-        private void RegisterWrapper<TMessage>(IWrapper wrapper)
+        private void RegisterWrapper<TMessage>(SyncroWrapper wrapper)
         {
             this.asyncMessageSubscriptions.
                 AddOrUpdate(
                 //// Key
                 typeof(TMessage),
                 //// Add
-                new List<IWrapper>(new[] { wrapper }),
+                new List<SyncroWrapper>(new[] { wrapper }),
                 //// Update
                 (key, value) =>
                 {
@@ -98,73 +99,12 @@
                 //// Key
                 keyToClean,
                 //// Add
-                new List<IWrapper>(),
+                new List<SyncroWrapper>(),
                 //// Update
                 (key, value) => value.Where(s => s.IsAlive).ToList());
         }
 
-        private interface IWrapper : IEquatable<IWrapper>
-        {
-            bool IsAlive { get; }
-
-            Task InvokeAction<TMessage>(TMessage message);
-        }
-
-        private class AsyncWrapper : IWrapper, IEquatable<IWrapper>
-        {
-            private readonly MethodInfo subscriberMethod;
-
-            private readonly WeakReference weakTarget;
-
-            public AsyncWrapper(Delegate syncroHandleAction)
-            {
-                this.subscriberMethod = syncroHandleAction.Method;
-
-                this.weakTarget = new WeakReference(syncroHandleAction.Target);
-            }
-
-            public bool IsAlive
-            {
-                get
-                {
-                    return this.weakTarget.IsAlive || this.subscriberMethod.IsStatic;
-                }
-            }
-
-            public Task InvokeAction<TMessage>(TMessage message)
-            {
-                object targetStrongRef = this.weakTarget.Target;
-
-                Task methodTask;
-
-                if (this.IsAlive)
-                {
-                    methodTask = (Task)this.subscriberMethod.Invoke(targetStrongRef, new object[] { message });
-                }
-                else
-                {
-                    methodTask = Task.FromResult(true);
-                }
-
-                return methodTask;
-            }
-
-            public bool Equals(IWrapper other)
-            {
-                AsyncWrapper otherWrapper = other as AsyncWrapper;
-
-                if (otherWrapper == null)
-                {
-                    return false;
-                }
-
-                return this.IsAlive && other.IsAlive
-                    && object.ReferenceEquals(this.weakTarget.Target, otherWrapper.weakTarget.Target)
-                    && this.subscriberMethod == otherWrapper.subscriberMethod;
-            }
-        }
-        
-        private class SyncroWrapper : IWrapper, IEquatable<IWrapper>
+        private class SyncroWrapper : IEquatable<SyncroWrapper>
         {
             private readonly MethodInfo subscriberMethod;
 
@@ -185,29 +125,17 @@
                 }
             }
 
-            public Task InvokeAction<TMessage>(TMessage message)
+            public void InvokeAction<TMessage>(TMessage message)
             {
                 object targetStrongRef = this.weakTarget.Target;
 
-                Task methodTask;
-
                 if (this.IsAlive)
                 {
-                    methodTask = Task.Factory.StartNew(() =>
-                        {
-                            object strongRef = targetStrongRef;
-                            this.subscriberMethod.Invoke(strongRef, new object[] { message });
-                        }, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
+                    SynchronizationContext.Current.Post(_ => this.subscriberMethod.Invoke(targetStrongRef, new object[] { message }), null);
                 }
-                else
-                {
-                    methodTask = Task.FromResult(true);
-                }
-
-                return methodTask;
             }
 
-            public bool Equals(IWrapper other)
+            public bool Equals(SyncroWrapper other)
             {
                 SyncroWrapper otherWrapper = other as SyncroWrapper;
 

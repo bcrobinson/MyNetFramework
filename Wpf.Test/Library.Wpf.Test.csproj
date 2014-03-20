@@ -60,6 +60,7 @@
     <Compile Include="RevertableNotifyPropertyChangedTests.cs" />
     <Compile Include="SampleViewModel.cs" />
     <Compile Include="SortedObservableCollectionTests.cs" />
+    <Compile Include="SubscriptionManagerTest.cs" />
     <Compile Include="ViewModelBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
